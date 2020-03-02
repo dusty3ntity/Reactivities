@@ -3,7 +3,6 @@ obj
 .vscode
 .DS_Store
 appsettings.json
-*.db
 wwwroot
 
 # Created by https://www.gitignore.io/api/node,react,csharp,visualstudiocode
