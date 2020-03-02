@@ -9,6 +9,7 @@ namespace Persistence
 		public DataContext(DbContextOptions options) : base(options) { }
 
 		public DbSet<Value> Values { get; set; }
+		public DbSet<Activity> Activities { get; set; }
 
 		// Seeding the database on its creating with some test data
 		protected override void OnModelCreating(ModelBuilder builder)
