@@ -1,3 +1,7 @@
+using Application.Activities;
+
+using MediatR;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +22,7 @@ namespace API
 
 		public IConfiguration Configuration { get; }
 
-		// This method gets called by the runtime. Use this method to add services to the container.
+		// This method gets called by the runtime. Use this method to add services to the container (dependency injection).
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<DataContext>(options =>
@@ -31,6 +35,8 @@ namespace API
 					policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
 				});
 			});
+			// One of the Application class to provide the assembly of the Application project.
+			services.AddMediatR(typeof(List).Assembly);
 			services.AddControllers();
 		}
 
