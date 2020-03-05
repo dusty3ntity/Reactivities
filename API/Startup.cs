@@ -1,5 +1,9 @@
 using Application.Activities;
 
+using API.Middleware;
+
+using FluentValidation.AspNetCore;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Builder;
@@ -37,16 +41,20 @@ namespace API
 			});
 			// One of the Application class to provide the assembly of the Application project.
 			services.AddMediatR(typeof(List).Assembly);
-			services.AddControllers();
+			services.AddControllers().AddFluentValidation(cfg =>
+			{
+				cfg.RegisterValidatorsFromAssemblyContaining<Create>(); // One of the classes to pick an assembly again.
+			});
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
-			// Ordering is important! (adding components to the conveyor)
+			app.UseMiddleware<ErrorHandlingMiddleware>();
+
 			if (env.IsDevelopment())
 			{
-				app.UseDeveloperExceptionPage();
+				// app.UseDeveloperExceptionPage();
 			}
 
 			// Temporarily off, remember to add https://localhost:5001; url for listening https

@@ -1,6 +1,11 @@
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Application.Errors;
+
+using FluentValidation;
 
 using MediatR;
 
@@ -30,12 +35,25 @@ namespace Application.Activities
 				_context = context;
 			}
 
+			public class CommandValidator : AbstractValidator<Command>
+			{
+				public CommandValidator()
+				{
+					RuleFor(a => a.Title).NotEmpty();
+					RuleFor(a => a.Description).NotEmpty();
+					RuleFor(a => a.Category).NotEmpty();
+					RuleFor(a => a.Date).NotEmpty();
+					RuleFor(a => a.City).NotEmpty();
+					RuleFor(a => a.Venue).NotEmpty();
+				}
+			}
+
 			public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
 			{
 				var activity = await _context.Activities.FindAsync(request.Id);
 
 				if (activity == null)
-					throw new Exception("Could not find activity");
+					throw new RestException(HttpStatusCode.NotFound, new { activity = "Not found" });
 
 				// Temporarily, will add a mapper later.
 				activity.Title = request.Title ?? activity.Title;
