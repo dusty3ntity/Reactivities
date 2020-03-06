@@ -3,6 +3,7 @@ import { createContext, SyntheticEvent } from "react";
 import { IActivity } from "../models/activity";
 import agent from "../api/agent";
 import { history } from "../..";
+import { toast } from "react-toastify";
 
 configure({ enforceActions: "always" });
 
@@ -72,10 +73,6 @@ class ActivityStore {
 		}
 	};
 
-	@action clearActivity = () => {
-		this.activity = null;
-	};
-
 	getActivity = (id: string) => {
 		return this.activityRegistry.get(id);
 	};
@@ -89,7 +86,8 @@ class ActivityStore {
 			});
 			history.push(`/activities/${activity.id}`);
 		} catch (err) {
-			console.log(err);
+			toast.error("Problem submitting data");
+			console.log(err.response);
 		} finally {
 			runInAction("creating activity", () => {
 				this.submitting = false;
@@ -107,7 +105,8 @@ class ActivityStore {
 			});
 			history.push(`/activities/${activity.id}`);
 		} catch (err) {
-			console.log(err);
+			toast.error("Problem submitting data");
+			console.log(err.response);
 		} finally {
 			runInAction("editing activity", () => {
 				this.submitting = false;
@@ -131,6 +130,10 @@ class ActivityStore {
 				this.target = "";
 			});
 		}
+	};
+
+	@action clearActivity = () => {
+		this.activity = null;
 	};
 }
 

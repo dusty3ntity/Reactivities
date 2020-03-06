@@ -12,6 +12,20 @@ import { SelectInput } from "../../../app/common/form/SelectInput";
 import { category } from "../../../app/common/options/CategoryOptions";
 import { DateInput } from "../../../app/common/form/DateInput";
 import { combineDateAndTime } from "../../../app/common/util/util";
+import { combineValidators, isRequired, composeValidators, hasLengthGreaterThan } from "revalidate";
+
+const validate = combineValidators({
+	title: isRequired({ message: "The event title is required" }),
+	category: isRequired("Category"),
+	description: composeValidators(
+		isRequired("Description"),
+		hasLengthGreaterThan(4)({ message: "Description needs to be at least 5 characters" })
+	)(),
+	city: isRequired("City"),
+	venue: isRequired("Venue"),
+	date: isRequired("Date"),
+	time: isRequired("Time")
+});
 
 interface DetailParams {
 	id: string;
@@ -54,9 +68,10 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({ match, hist
 			<Grid.Column width={10}>
 				<Segment clearing>
 					<FinalForm
+						validate={validate}
 						initialValues={activity}
 						onSubmit={handleFinalFormSubmit}
-						render={({ handleSubmit }) => (
+						render={({ handleSubmit, invalid, pristine }) => (
 							<Form onSubmit={handleSubmit} loading={loading}>
 								<Field name="title" placeholder="Title" value={activity.title} component={TextInput} />
 								<Field
@@ -92,7 +107,7 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({ match, hist
 								<Field name="city" placeholder="City" value={activity.city} component={TextInput} />
 								<Field name="venue" placeholder="Venue" value={activity.venue} component={TextInput} />
 								<Button
-									disabled={loading}
+									disabled={loading || invalid || pristine }
 									loading={submitting}
 									floated="right"
 									positive
@@ -101,7 +116,9 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({ match, hist
 								/>
 								<Button
 									disabled={loading}
-									onClick={() => history.push(`/activities` + (activity.id ? "/" + activity.id : "/"))}
+									onClick={() =>
+										history.push(`/activities` + (activity.id ? "/" + activity.id : "/"))
+									}
 									floated="right"
 									type="button"
 									content="Cancel"
