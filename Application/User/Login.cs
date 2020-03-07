@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Application.Errors;
+using Application.Interfaces;
 
 using Domain;
 
@@ -35,12 +36,13 @@ namespace Application.User
 		{
 			private readonly UserManager<AppUser> _userManager;
 			private readonly SignInManager<AppUser> _signInManager;
+			private readonly IJwtGenerator _jwtGenerator;
 
-			public Handler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+			public Handler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IJwtGenerator jwtGenerator)
 			{
 				_signInManager = signInManager;
 				_userManager = userManager;
-
+				_jwtGenerator = jwtGenerator;
 			}
 
 			public async Task<User> Handle(Query request, CancellationToken cancellationToken)
@@ -54,13 +56,12 @@ namespace Application.User
 
 				if (result.Succeeded)
 				{
-					// TODO: generate a token
 					return new User
 					{
 						DisplayName = user.DisplayName,
-						Token = "This will be a token",
-						Username = user.UserName,
-						Image = null
+							Token = _jwtGenerator.CreateToken(user),
+							Username = user.UserName,
+							Image = null
 					};
 				}
 

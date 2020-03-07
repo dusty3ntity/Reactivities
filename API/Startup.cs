@@ -1,10 +1,13 @@
 using Application.Activities;
+using Application.Interfaces;
 
 using API.Middleware;
 
 using Domain;
 
 using FluentValidation.AspNetCore;
+
+using Infrastructure.Security;
 
 using MediatR;
 
@@ -55,6 +58,8 @@ namespace API
 			identityBuilder.AddSignInManager<SignInManager<AppUser>>();
 
 			services.AddAuthentication();
+
+			services.AddScoped<IJwtGenerator, JwtGenerator>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
