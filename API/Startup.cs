@@ -5,6 +5,8 @@ using Application.Interfaces;
 
 using API.Middleware;
 
+using AutoMapper;
+
 using Domain;
 
 using FluentValidation.AspNetCore;
@@ -42,8 +44,10 @@ namespace API
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<DataContext>(options =>
-				options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"))
-			);
+			{
+				options.UseLazyLoadingProxies();
+				options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+			});
 			services.AddCors(opt =>
 			{
 				opt.AddPolicy("CorsPolicy", policy =>
@@ -53,6 +57,8 @@ namespace API
 			});
 			// One of the Application class to provide the assembly of the Application project.
 			services.AddMediatR(typeof(List).Assembly);
+			services.AddAutoMapper(typeof(List).Assembly);
+
 			services.AddControllers(opt =>
 			{
 				var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();

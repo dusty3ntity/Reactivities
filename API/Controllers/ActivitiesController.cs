@@ -7,7 +7,7 @@ using Application.Activities;
 using Domain;
 
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -15,13 +15,13 @@ namespace API.Controllers
 	public class ActivitiesController : BaseController
 	{
 		[HttpGet]
-		public async Task<ActionResult<List<Activity>>> List()
+		public async Task<ActionResult<List<ActivityDto>>> List()
 		{
 			return await Mediator.Send(new List.Query());
 		}
 
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Activity>> Details(Guid id)
+		public async Task<ActionResult<ActivityDto>> Details(Guid id)
 		{
 			return await Mediator.Send(new Details.Query { Id = id });
 		}

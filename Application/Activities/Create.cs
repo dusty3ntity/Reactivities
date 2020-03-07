@@ -2,9 +2,15 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Application.Interfaces;
+
 using Domain;
+
 using FluentValidation;
+
 using MediatR;
+
+using Microsoft.EntityFrameworkCore;
 
 using Persistence;
 
@@ -23,26 +29,28 @@ namespace Application.Activities
 			public string Venue { get; set; }
 		}
 
-        public class CommandValidator : AbstractValidator<Command>
-        {
-            public CommandValidator()
-            {
+		public class CommandValidator : AbstractValidator<Command>
+		{
+			public CommandValidator()
+			{
 				RuleFor(a => a.Title).NotEmpty();
 				RuleFor(a => a.Description).NotEmpty();
 				RuleFor(a => a.Category).NotEmpty();
 				RuleFor(a => a.Date).NotEmpty();
 				RuleFor(a => a.City).NotEmpty();
 				RuleFor(a => a.Venue).NotEmpty();
-            }
-        }
+			}
+		}
 
-        public class Handler : IRequestHandler<Command>
+		public class Handler : IRequestHandler<Command>
 		{
 			private readonly DataContext _context;
+			private readonly IUserAccessor _userAccessor;
 
-			public Handler(DataContext context)
+			public Handler(DataContext context, IUserAccessor userAccessor)
 			{
 				_context = context;
+				_userAccessor = userAccessor;
 			}
 
 			public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -58,10 +66,21 @@ namespace Application.Activities
 						Venue = request.Venue
 				};
 
+				var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUsername());
+
+				var attendee = new UserActivity
+				{
+					AppUser = user,
+						Activity = activity,
+						IsHost = true,
+						DateJoined = DateTime.Now
+				};
+
 				_context.Activities.Add(activity);
+				_context.UserActivities.Add(attendee);
 				var success = await _context.SaveChangesAsync() > 0; // Returns the number of changes done.
 
-				if (success) 
+				if (success)
 					return Unit.Value;
 				throw new Exception("Problem saving changes");
 			}
