@@ -12,6 +12,7 @@ namespace Persistence
 		public DbSet<Value> Values { get; set; }
 		public DbSet<Activity> Activities { get; set; }
 		public DbSet<UserActivity> UserActivities { get; set; }
+		public DbSet<Photo> Photos { get; set; }
 
 		// Seeding the database on its creating with some test data
 		protected override void OnModelCreating(ModelBuilder builder)
