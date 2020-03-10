@@ -32,7 +32,7 @@ namespace Infrastructure.Photos
 					var uploadParams = new ImageUploadParams
 					{
 						File = new FileDescription(file.FileName, stream),
-						Transformation = new Transformation()
+							Transformation = new Transformation()
 							.Height(500)
 							.Width(500)
 							.Crop("fill")
@@ -54,7 +54,11 @@ namespace Infrastructure.Photos
 
 		public string DeletePhoto(string publicId)
 		{
-			throw new NotImplementedException();
+			var deleteParams = new DeletionParams(publicId);
+
+			var result = _cloudinary.Destroy(deleteParams);
+
+			return result.Result == "ok" ? result.Result : null;
 		}
 	}
 }
