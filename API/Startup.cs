@@ -1,9 +1,11 @@
 using System.Text;
+using System.Threading.Tasks;
 
 using Application.Activities;
 using Application.Interfaces;
 
 using API.Middleware;
+using API.SignalR;
 
 using AutoMapper;
 
@@ -59,6 +61,7 @@ namespace API
 			// One of the Application class to provide the assembly of the Application project.
 			services.AddMediatR(typeof(List).Assembly);
 			services.AddAutoMapper(typeof(List).Assembly);
+			services.AddSignalR();
 
 			services.AddControllers(opt =>
 			{
@@ -84,16 +87,30 @@ namespace API
 
 			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
 
-			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
-			{
-				opt.TokenValidationParameters = new TokenValidationParameters
+			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+				.AddJwtBearer(opt =>
 				{
-					ValidateIssuerSigningKey = true,
-						IssuerSigningKey = key,
-						ValidateAudience = false,
-						ValidateIssuer = false
-				};
-			});
+					opt.TokenValidationParameters = new TokenValidationParameters
+					{
+						ValidateIssuerSigningKey = true,
+							IssuerSigningKey = key,
+							ValidateAudience = false,
+							ValidateIssuer = false
+					};
+					opt.Events = new JwtBearerEvents
+					{
+						OnMessageReceived = context =>
+						{
+							var accessToken = context.Request.Query["access_token"];
+							var path = context.HttpContext.Request.Path;
+							if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/chat")))
+							{
+								context.Token = accessToken;
+							}
+							return Task.CompletedTask;
+						}
+					};
+				});
 
 			services.AddScoped<IJwtGenerator, JwtGenerator>();
 			services.AddScoped<IUserAccessor, UserAccessor>();
@@ -123,6 +140,7 @@ namespace API
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();
+				endpoints.MapHub<ChatHub>("/chat");
 			});
 		}
 	}
