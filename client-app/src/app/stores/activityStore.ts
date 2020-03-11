@@ -24,20 +24,20 @@ export default class ActivityStore {
 	@observable loading = false;
 	@observable.ref hubConnection: HubConnection | null = null;
 
-	@action createHubConnection = () => {
+	@action createHubConnection = (activityId: string) => {
 		this.hubConnection = new HubConnectionBuilder()
 			.withUrl("http://localhost:5000/chat", {
 				accessTokenFactory: () => this.rootStore.commonStore.token!
 			})
-			.configureLogging(LogLevel.Information)
+			.configureLogging(LogLevel.Error)
 			.build();
 
 		this.hubConnection
 			.start()
 			.then(() => {
-				console.log(this.hubConnection!.start);
+				if (this.hubConnection!.state === "Connected") this.hubConnection!.invoke("AddToGroup", activityId);
 			})
-			.catch(err => console.log("Error establishing connection: ", err));
+			.catch(err => console.log("Error establishing hub connection: ", err));
 
 		this.hubConnection.on("ReceiveComment", comment => {
 			runInAction(() => this.activity!.comments.push(comment));
@@ -45,7 +45,11 @@ export default class ActivityStore {
 	};
 
 	@action stopHubConnection = () => {
-		this.hubConnection!.stop();
+		this.hubConnection!.invoke("RemoveFromGroup", this.activity!.id)
+			.then(() => {
+				runInAction(() => this.hubConnection!.stop());
+			})
+			.catch(err => console.log(err));
 	};
 
 	@action addComment = async (values: any) => {
