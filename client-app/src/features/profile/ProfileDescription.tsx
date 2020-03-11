@@ -13,7 +13,7 @@ const ProfileDescription = () => {
 		<Tab.Pane>
 			<Grid>
 				<Grid.Column width={16}>
-					<Header floated="left" icon="user" content={`About ${profile!.username}`} />
+					<Header floated="left" icon="user" content={`About ${profile!.displayName}`} />
 					{isCurrentUser && (
 						<Button
 							floated="right"
