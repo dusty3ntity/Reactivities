@@ -13,6 +13,7 @@ import LoginForm from "../../features/user/LoginForm";
 import { RootStoreContext } from "../stores/rootStore";
 import { LoadingComponent } from "./LoadingComponent";
 import ModalContainer from "../common/modals/ModalContainer";
+import ProfilePage from "../../features/profile/ProfilePage";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
 	const rootStore = useContext(RootStoreContext);
@@ -27,7 +28,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
 		}
 	}, [getUser, token, setAppLoaded]);
 
-	if (!appLoaded) return <LoadingComponent content="Loading app..." />
+	if (!appLoaded) return <LoadingComponent content="Loading app..." />;
 
 	return (
 		<Fragment>
@@ -48,7 +49,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
 									path={["/createActivity", "/manage/:id"]}
 									component={ActivityForm}
 								/>
-								<Route path="/login" component={LoginForm} />
+								<Route path="/profile/:username" component={ProfilePage} />
 								<Route component={NotFound} />
 							</Switch>
 						</Container>
