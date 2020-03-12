@@ -7,6 +7,7 @@ using Application.Activities;
 using Domain;
 
 using MediatR;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,9 +16,9 @@ namespace API.Controllers
 	public class ActivitiesController : BaseController
 	{
 		[HttpGet]
-		public async Task<ActionResult<List<ActivityDto>>> List()
+		public async Task<ActionResult<List.ActivitiesEnvelope>> List(int? limit, int? offset)
 		{
-			return await Mediator.Send(new List.Query());
+			return await Mediator.Send(new List.Query(limit, offset));
 		}
 
 		[HttpGet("{id}")]
