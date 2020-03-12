@@ -1,8 +1,10 @@
+using System;
 using System.Text;
 using System.Threading.Tasks;
 
 using Application.Activities;
 using Application.Interfaces;
+using Application.Profiles;
 
 using API.Middleware;
 using API.SignalR;
@@ -31,7 +33,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
 using Persistence;
-using Application.Profiles;
 
 namespace API
 {
@@ -56,7 +57,11 @@ namespace API
 			{
 				opt.AddPolicy("CorsPolicy", policy =>
 				{
-					policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000").AllowCredentials();
+					policy.AllowAnyHeader()
+						.AllowAnyMethod()
+						.WithExposedHeaders("WWW-Authenticate")
+						.WithOrigins("http://localhost:3000")
+						.AllowCredentials();
 				});
 			});
 			// One of the Application class to provide the assembly of the Application project.
@@ -96,7 +101,9 @@ namespace API
 						ValidateIssuerSigningKey = true,
 							IssuerSigningKey = key,
 							ValidateAudience = false,
-							ValidateIssuer = false
+							ValidateIssuer = false,
+							ValidateLifetime = true,
+							ClockSkew = TimeSpan.Zero
 					};
 					opt.Events = new JwtBearerEvents
 					{
