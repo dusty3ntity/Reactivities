@@ -60,6 +60,7 @@ const ProfilePhotos = () => {
 													basic
 													positive
 													content="Main"
+													style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
 												/>
 												<Button
 													name={photo.id}
@@ -72,6 +73,7 @@ const ProfilePhotos = () => {
 													basic
 													negative
 													icon="trash"
+													style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
 												/>
 											</Button.Group>
 										)}

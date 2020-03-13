@@ -12,7 +12,7 @@ const ActivityDetailedSidebar: React.FC<IProps> = ({ attendees }) => {
 	return (
 		<Fragment>
 			<Segment textAlign="center" style={{ border: "none" }} attached="top" secondary inverted color="teal">
-				{attendees.length} {attendees.length === 1 ? "Person" : "People"} going
+				{attendees.length} {attendees.length === 1 ? "person" : "people"} going
 			</Segment>
 			<Segment attached>
 				<List relaxed divided>

@@ -44,11 +44,12 @@ const ActivityDetailedChat = () => {
 
 					<FinalForm
 						onSubmit={addComment}
-						render={({ handleSubmit, submitting, form }) => (
+						render={({ handleSubmit, submitting, form, pristine }) => (
 							<Form onSubmit={() => handleSubmit()!.then(() => form.reset())}>
 								<Field name="body" component={TextAreaInput} rows={2} placeholder="Add your comment" />
 								<Button
-									content="Add Reply"
+									disabled={pristine}
+									content="Add reply"
 									labelPosition="left"
 									icon="edit"
 									primary
