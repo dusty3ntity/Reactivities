@@ -9,7 +9,18 @@ export const HomePage = () => {
 	const token = window.localStorage.getItem("jwt");
 	const rootStore = useContext(RootStoreContext);
 	const { isLoggedIn, user } = rootStore.userStore;
-	const {openModal} = rootStore.modalStore;
+	const { openModal } = rootStore.modalStore;
+
+	const testLabelStyling = {
+		width: "500px",
+		backgroundColor: "teal",
+		position: "absolute",
+		bottom: "10px",
+		marginLeft: "auto",
+		marginRight: "auto",
+		left: 0,
+		right: 0
+	};
 
 	return (
 		<Segment inverted textAlign="center" vertical className="masthead">
@@ -34,6 +45,11 @@ export const HomePage = () => {
 						<Button onClick={() => openModal(<RegisterForm />)} size="huge" inverted>
 							Register
 						</Button>
+						<Segment style={testLabelStyling}>
+							<Header as="h3" inverted>
+								Account for testing: test@test.com:P@ssw0rd
+							</Header>
+						</Segment>
 					</Fragment>
 				)}
 			</Container>
