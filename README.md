@@ -2,7 +2,7 @@
 
 A social network-like web application for creating activities (events) for people to attend them.
 
-#### :globe_with_meridians: Demo: *comming soon* (enjoy screenshots instead :cat:)
+#### :globe_with_meridians: Demo: *coming soon* (enjoy screenshots instead :cat:)
 
 <p align="center">
   <img src="https://res.cloudinary.com/keklolkek/image/upload/v1584106796/Screenshot_11_cjxjk2.png" alt="Reactivities"/>
