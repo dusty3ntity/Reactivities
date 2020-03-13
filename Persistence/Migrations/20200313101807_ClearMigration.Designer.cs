@@ -9,8 +9,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200311175335_AddedCommentEntity")]
-    partial class AddedCommentEntity
+    [Migration("20200313101807_ClearMigration")]
+    partial class ClearMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -186,35 +186,19 @@ namespace Persistence.Migrations
                     b.ToTable("UserActivities");
                 });
 
-            modelBuilder.Entity("Domain.Value", b =>
+            modelBuilder.Entity("Domain.UserFollowing", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("ObserverId")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.Property<string>("TargetId")
+                        .HasColumnType("TEXT");
 
-                    b.ToTable("Values");
+                    b.HasKey("ObserverId", "TargetId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Value101"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Value102"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Value103"
-                        });
+                    b.HasIndex("TargetId");
+
+                    b.ToTable("Followings");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -375,6 +359,21 @@ namespace Persistence.Migrations
                         .WithMany("UserActivities")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.UserFollowing", b =>
+                {
+                    b.HasOne("Domain.AppUser", "Observer")
+                        .WithMany("Followings")
+                        .HasForeignKey("ObserverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.AppUser", "Target")
+                        .WithMany("Followers")
+                        .HasForeignKey("TargetId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
