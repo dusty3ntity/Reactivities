@@ -1,5 +1,4 @@
 import { observable, action, computed, runInAction, reaction, toJS } from "mobx";
-import { SyntheticEvent } from "react";
 import { IActivity } from "../models/activity";
 import agent from "../api/agent";
 import { history } from "../..";
@@ -91,10 +90,12 @@ export default class ActivityStore {
 	};
 
 	@action addComment = async (values: any) => {
+		if (!values.body) return;
 		values.activityId = this.activity!.id;
 		try {
 			await this.hubConnection!.invoke("SendComment", values);
 		} catch (err) {
+			toast.error("Problem adding reply");
 			console.log(err);
 		}
 	};
@@ -208,21 +209,17 @@ export default class ActivityStore {
 		}
 	};
 
-	@action deleteActivity = async (event: SyntheticEvent<HTMLButtonElement>, id: string) => {
-		this.submitting = true;
-		this.target = event.currentTarget.name;
+	@action deleteActivity = async () => {
+		this.loading = true;
 		try {
-			await agent.Activities.delete(id);
-			runInAction("deleting activity", () => {
-				this.activityRegistry.delete(id);
-			});
+			await agent.Activities.delete(this.activity!.id);
+			runInAction("deleting activity", () => this.activityRegistry.delete(this.activity!.id));
+			history.push("/activities");
 		} catch (err) {
+			toast.error("Problem deleting activity");
 			console.log(err);
 		} finally {
-			runInAction("deleting activity", () => {
-				this.submitting = false;
-				this.target = "";
-			});
+			runInAction("deleting activity", () => (this.loading = false));
 		}
 	};
 

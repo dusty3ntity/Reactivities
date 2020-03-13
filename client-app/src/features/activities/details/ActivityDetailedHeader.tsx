@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, Fragment } from "react";
 import { Segment, Item, Header, Button, Image } from "semantic-ui-react";
 import { IActivity } from "../../../app/models/activity";
 import { observer } from "mobx-react-lite";
@@ -21,7 +21,7 @@ const activityImageTextStyle = {
 
 const ActivityDetailedHeader: React.FC<{ activity: IActivity }> = ({ activity }) => {
 	const rootStore = useContext(RootStoreContext);
-	const { attendActivity, cancelAttendance, loading } = rootStore.activityStore;
+	const { attendActivity, cancelAttendance, loading, deleteActivity } = rootStore.activityStore;
 	const host = activity.attendees.filter(x => x.isHost)[0];
 
 	return (
@@ -47,9 +47,14 @@ const ActivityDetailedHeader: React.FC<{ activity: IActivity }> = ({ activity })
 			</Segment>
 			<Segment clearing attached="bottom">
 				{activity.isHost ? (
-					<Button as={Link} to={`/manage/${activity.id}`} color="orange" floated="right">
-						Manage Event
-					</Button>
+					<Fragment>
+						<Button loading={loading} onClick={deleteActivity} color="red">
+							Delete activity
+						</Button>
+						<Button as={Link} to={`/manage/${activity.id}`} color="orange" floated="right">
+							Manage Event
+						</Button>
+					</Fragment>
 				) : activity.isGoing ? (
 					<Button loading={loading} onClick={cancelAttendance}>
 						Cancel attendance
